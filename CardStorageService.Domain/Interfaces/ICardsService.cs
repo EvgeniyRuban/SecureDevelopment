@@ -1,6 +1,6 @@
 ﻿namespace CardStorageService.Domain;
 
-public interface ICardsRepository
+public interface ICardsService
 {
     Task<Guid> Add(CardToCreate cardToCreate, CancellationToken cancellationToken);
     Task<CardResponse> Get(Guid id, CancellationToken cancellationToken);

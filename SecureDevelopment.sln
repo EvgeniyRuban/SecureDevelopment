@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardStorageService", "CardStorageService\CardStorageService.csproj", "{8B338BE2-552E-41D8-A87D-2D057DA82932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardStorageService", "CardStorageService\CardStorageService.csproj", "{8B338BE2-552E-41D8-A87D-2D057DA82932}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardStorageService.DAL", "CardStorageService.DAL\CardStorageService.DAL.csproj", "{540A9E2E-1DA4-474E-85B2-E59544E6E85D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardStorageService.DAL", "CardStorageService.DAL\CardStorageService.DAL.csproj", "{540A9E2E-1DA4-474E-85B2-E59544E6E85D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardStorageService.Domain", "CardStorageService.Domain\CardStorageService.Domain.csproj", "{ADC0128A-9B45-4660-9103-A4892FE1747D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardStorageService.Domain", "CardStorageService.Domain\CardStorageService.Domain.csproj", "{ADC0128A-9B45-4660-9103-A4892FE1747D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardStorageService.Services", "CardStorageService.Services\CardStorageService.Services.csproj", "{BEE4987D-5B6E-42C1-84DE-DEFD044A316D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{ADC0128A-9B45-4660-9103-A4892FE1747D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADC0128A-9B45-4660-9103-A4892FE1747D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADC0128A-9B45-4660-9103-A4892FE1747D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEE4987D-5B6E-42C1-84DE-DEFD044A316D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEE4987D-5B6E-42C1-84DE-DEFD044A316D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEE4987D-5B6E-42C1-84DE-DEFD044A316D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE4987D-5B6E-42C1-84DE-DEFD044A316D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

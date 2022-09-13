@@ -12,12 +12,12 @@ namespace CardStorageService.Controllers;
 [Route("[controller]")]
 public class ClientsController : ControllerBase
 {
-    private readonly IClientsRepository _repository;
+    private readonly IClientsService _clientsService;
     private readonly ILogger<ClientsController> _logger;
 
-    public ClientsController(IClientsRepository repository, ILogger<ClientsController> logger)
+    public ClientsController(IClientsService clientsService, ILogger<ClientsController> logger)
     {
-        _repository = repository;
+        _clientsService = clientsService;
         _logger = logger;
     }
 
@@ -28,7 +28,7 @@ public class ClientsController : ControllerBase
 
         try
         {
-            client = await _repository.Get(id, cancellationToken);
+            client = await _clientsService.Get(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -39,7 +39,7 @@ public class ClientsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return client is null ? NotFound() : Ok(client);
+        return Ok(client);
     }
 
     [HttpGet]
@@ -49,7 +49,7 @@ public class ClientsController : ControllerBase
 
         try
         {
-            clients = await _repository.GetAll(cancellationToken);
+            clients = await _clientsService.GetAll(cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -60,7 +60,7 @@ public class ClientsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return clients is null ? NotFound() : Ok(clients);
+        return Ok(clients);
     }
 
     [HttpPost]
@@ -71,7 +71,7 @@ public class ClientsController : ControllerBase
         Guid? newClientId = null;
         try
         {
-            newClientId = await _repository.Add(clientToCreate, cancellationToken);
+            newClientId = await _clientsService.Add(clientToCreate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -82,7 +82,7 @@ public class ClientsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return newClientId is null ? NotFound() : Ok(newClientId);
+        return Ok(newClientId);
     }
 
     [HttpPut]
@@ -92,7 +92,7 @@ public class ClientsController : ControllerBase
 
         try
         {
-            await _repository.Update(clientToUpdate, cancellationToken);
+            await _clientsService.Update(clientToUpdate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -111,7 +111,7 @@ public class ClientsController : ControllerBase
     {
         try
         {
-            await _repository.Delete(clientId, cancellationToken);
+            await _clientsService.Delete(clientId, cancellationToken);
         }
         catch (OperationCanceledException)
         {
