@@ -6,10 +6,10 @@ namespace CardStorageService.DAL;
 
 public sealed class CardsRepository : ICardsRepository
 {
-    private readonly CardStorageServiceDbContext _context;
+    private readonly CardsStorageServiceDbContext _context;
     private readonly ILogger<CardsRepository> _logger;
 
-    public CardsRepository(CardStorageServiceDbContext context, ILogger<CardsRepository> logger)
+    public CardsRepository(CardsStorageServiceDbContext context, ILogger<CardsRepository> logger)
     {
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
         ArgumentNullException.ThrowIfNull(context, nameof(context));

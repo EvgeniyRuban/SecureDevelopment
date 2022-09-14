@@ -12,15 +12,15 @@ namespace CardStorageService.Controllers;
 [Route("[controller]")]
 public sealed class CardsController : ControllerBase
 {
-    private readonly ICardsRepository _repository;
+    private readonly ICardsService _cardsService;
     private readonly ILogger<CardsController> _logger;
 
-    public CardsController(ICardsRepository repository, ILogger<CardsController> logger)
+    public CardsController(ICardsService cardsService, ILogger<CardsController> logger)
     {
-        ArgumentNullException.ThrowIfNull(repository, nameof(repository));
+        ArgumentNullException.ThrowIfNull(cardsService, nameof(cardsService));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
-        _repository = repository;
+        _cardsService = cardsService;
         _logger = logger;
     }
 
@@ -31,7 +31,7 @@ public sealed class CardsController : ControllerBase
 
         try
         {
-            card = await _repository.Get(id, cancellationToken);
+            card = await _cardsService.Get(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -42,7 +42,7 @@ public sealed class CardsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return card is null ? NotFound() : Ok(card);
+        return Ok(card);
     }
 
     [HttpGet]
@@ -52,7 +52,7 @@ public sealed class CardsController : ControllerBase
 
         try
         {
-            cards = await _repository.GetAll(cancellationToken);
+            cards = await _cardsService.GetAll(cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -63,18 +63,18 @@ public sealed class CardsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return cards is null ? NotFound() : Ok(cards);
+        return Ok(cards);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Add([FromQuery] CardToCreate cardToCreate, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Add([FromBody] CardToCreate cardToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToCreate, nameof(cardToCreate));
 
         Guid? newCardId = null;
         try
         {
-            newCardId = await _repository.Add(cardToCreate, cancellationToken);
+            newCardId = await _cardsService.Add(cardToCreate, cancellationToken);
         }
         catch(OperationCanceledException)
         {
@@ -85,17 +85,17 @@ public sealed class CardsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return newCardId is null ? NotFound() : Ok(newCardId);
+        return Ok(newCardId);
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromQuery]CardToUpdate cardToUpdate, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromBody] CardToUpdate cardToUpdate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToUpdate, nameof(cardToUpdate));
 
         try
         {
-            await _repository.Update(cardToUpdate, cancellationToken);
+            await _cardsService.Update(cardToUpdate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -110,11 +110,11 @@ public sealed class CardsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete([FromRoute] Guid cardId, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await _repository.Delete(cardId, cancellationToken);
+            await _cardsService.Delete(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {

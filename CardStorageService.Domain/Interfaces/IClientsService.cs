@@ -1,23 +1,23 @@
 ﻿namespace CardStorageService.Domain;
 
-public interface ICardsRepository
+public interface IClientsService
 {
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<Guid> Add(CardToCreate cardToCreate, CancellationToken cancellationToken);
+    Task<Guid> Add(ClientToCreate clientToCreate, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<CardResponse> Get(Guid id, CancellationToken cancellationToken);
+    Task<ClientResponse> Get(Guid id, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<IEnumerable<CardResponse>> GetAll(CancellationToken cancellationToken);
+    Task<IEnumerable<ClientResponse>> GetAll(CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task Update(CardToUpdate cardToUpdate, CancellationToken cancellationToken);
+    Task Update(ClientToUpdate clientToUpdate, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>

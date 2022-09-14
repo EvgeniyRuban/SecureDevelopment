@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CardStorageService.DAL\CardStorageService.DAL.csproj" />
     <ProjectReference Include="..\CardStorageService.Domain\CardStorageService.Domain.csproj" />
+    <ProjectReference Include="..\CardStorageService.Services\CardStorageService.Services.csproj" />
   </ItemGroup>
 
 </Project>

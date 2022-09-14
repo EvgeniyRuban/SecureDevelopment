@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using CardStorageService.DAL;
 using CardStorageService.Domain;
+using CardStorageService.Services;
 
 namespace CardStorageService
 {
@@ -21,12 +22,20 @@ namespace CardStorageService
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<CardStorageServiceDbContext>(options =>
+            services.AddDbContext<CardsStorageServiceDbContext>(options =>
             {
                 options.UseSqlServer(Configuration["Settings:DbSettings:ConnectionString"]);
             });
+
             services.AddScoped<IClientsRepository, ClientsRepository>();
             services.AddScoped<ICardsRepository, CardsRepository>();
+            services.AddScoped<IAccountsRepository, AccountsRepository>();
+            services.AddScoped<IAccountsSessionsRepository, AccountsSessionsRepository>();
+            services.AddScoped<IClientsService, ClientsService>();
+            services.AddScoped<ICardsService, CardsService>();
+            services.AddScoped<IAccountsService, AccountsService>();
+            services.AddScoped<IAccountsSessionsService, AccountsSessionsService>();
+            services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

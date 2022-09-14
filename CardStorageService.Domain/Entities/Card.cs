@@ -20,8 +20,8 @@ public class Card
     [StringLength(3)]
     public string? CVV2 { get; set; }
 
-    [Column]
+    [Column(TypeName = "datetime2")]
     public DateTime ExpirationDate { get; set; }
 
-    public virtual Client Client { get; set; }
+    public virtual Client Client { get; set; } = null!;
 }

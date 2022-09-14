@@ -1,6 +1,6 @@
 ﻿namespace CardStorageService.Domain;
 
-public interface ICardsRepository
+public interface ICardsService
 {
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
