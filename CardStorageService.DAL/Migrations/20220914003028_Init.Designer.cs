@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CardStorageService.DAL.Migrations
 {
-    [DbContext(typeof(CardStorageServiceDbContext))]
-    [Migration("20220912233216_AccountsAndAccountsSessionsAdded")]
-    partial class AccountsAndAccountsSessionsAdded
+    [DbContext(typeof(CardsStorageServiceDbContext))]
+    [Migration("20220914003028_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,15 +30,21 @@ namespace CardStorageService.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("Firstname")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -86,6 +92,8 @@ namespace CardStorageService.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.ToTable("AccountsSessions");
                 });
@@ -140,6 +148,17 @@ namespace CardStorageService.DAL.Migrations
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("CardStorageService.DAL.AccountSession", b =>
+                {
+                    b.HasOne("CardStorageService.DAL.Account", "Account")
+                        .WithMany("AccountSessions")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("CardStorageService.DAL.Card", b =>
                 {
                     b.HasOne("CardStorageService.DAL.Client", "Client")
@@ -149,6 +168,11 @@ namespace CardStorageService.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("CardStorageService.DAL.Account", b =>
+                {
+                    b.Navigation("AccountSessions");
                 });
 
             modelBuilder.Entity("CardStorageService.DAL.Client", b =>

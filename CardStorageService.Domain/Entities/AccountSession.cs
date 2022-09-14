@@ -9,6 +9,7 @@ public class AccountSession
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
+    [ForeignKey(nameof(Account))]
     public Guid AccountId { get; set; }
 
     [Required]
@@ -22,4 +23,6 @@ public class AccountSession
 
     [Column(TypeName = "datetime2")]
     public DateTime End { get; set; }
+
+    public virtual Account Account { get; set; } = null!;
 }

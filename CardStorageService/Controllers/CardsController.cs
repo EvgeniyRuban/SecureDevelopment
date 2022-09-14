@@ -67,7 +67,7 @@ public sealed class CardsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Add([FromQuery] CardToCreate cardToCreate, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Add([FromBody] CardToCreate cardToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToCreate, nameof(cardToCreate));
 
@@ -89,7 +89,7 @@ public sealed class CardsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromQuery]CardToUpdate cardToUpdate, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromBody] CardToUpdate cardToUpdate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToUpdate, nameof(cardToUpdate));
 
@@ -110,11 +110,11 @@ public sealed class CardsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete([FromRoute] Guid cardId, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
         {
-            await _cardsService.Delete(cardId, cancellationToken);
+            await _cardsService.Delete(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {

@@ -2,9 +2,9 @@
 
 namespace CardStorageService.DAL;
 
-public class CardStorageServiceDbContext : DbContext
+public class CardsStorageServiceDbContext : DbContext
 {
-    public CardStorageServiceDbContext (DbContextOptions options) : base(options) { }
+    public CardsStorageServiceDbContext (DbContextOptions options) : base(options) { }
 
     public virtual DbSet<Client> Clients { get; set; } = null!;
     public virtual DbSet<Card> Cards { get; set; } = null!;

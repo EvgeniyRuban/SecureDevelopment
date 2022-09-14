@@ -6,11 +6,11 @@ namespace CardStorageService.DAL;
 [Table("Accounts")]
 public class Account
 {
-    [Key]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
     [Required, StringLength(255)]
-    public string Login { get; set; } = null!;
+    public string Email { get; set; } = null!;
 
     [Required, StringLength(384)]
     public string PasswordSalt { get; set; } = null!;
@@ -18,7 +18,7 @@ public class Account
     [Required, StringLength(255)]
     public string PasswordHash { get; set; } = null!;
 
-    [StringLength(100)]
+    [Required, StringLength(100)]
     public string Firstname { get; set; } = null!;
 
     [StringLength(100)]
@@ -26,4 +26,9 @@ public class Account
 
     [StringLength(100)]
     public string? Patronymic { get; set; }
+    public bool IsLocked { get; set; }
+    public bool IsDeleted { get; set; }
+
+    [InverseProperty(nameof(AccountSession.Account))]
+    public virtual ICollection<AccountSession> AccountSessions { get; set; } = new HashSet<AccountSession>();
 }
