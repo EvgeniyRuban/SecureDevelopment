@@ -21,11 +21,13 @@ public sealed class AccountsService : IAccountsService
     {
         ArgumentNullException.ThrowIfNull(accountToCreate, nameof(accountToCreate));
 
+        var result = PasswordUtils.CreatePasswordHash(accountToCreate.Password);
+
         return await _accountsRepository.Add(new()
         {
             Email = accountToCreate.Email,
-            PasswordHash = accountToCreate.PasswordHash,
-            PasswordSalt = accountToCreate.PasswordSalt,
+            PasswordHash = result.passwordHash,
+            PasswordSalt = result.passwordSalt,
             Firstname = accountToCreate.Firstname,
             Surname = accountToCreate.Surname,
             Patronymic = accountToCreate.Patronymic,

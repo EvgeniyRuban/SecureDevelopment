@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CardStorageService.Domain;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CardStorageService.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ClientsController : ControllerBase
