@@ -1,20 +1,21 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using CardStorageService.Domain;
-using CardStorageService.DAL;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using CardStorageService.Domain;
+using CardStorageService.DAL;
 
 namespace CardStorageService.Services;
 
 public sealed class AuthenticationService : IAuthenticationService
 {
+    public const string _sercretCode = "265381f4-4b09-44fd-beca-08da94f8637a";
+
     private readonly IServiceScopeFactory _serviceScopedFactory;
     private readonly object _lock = new();
-    private const string _sercretCode = "265381f4-4b09-44fd-beca-08da94f8637a";
     private readonly TimeSpan _tokenValidity = TimeSpan.FromMinutes(15);
     private ConcurrentDictionary<string, AccountSessionResponse> _accountsSessionsCash = new ();
 
@@ -66,6 +67,7 @@ public sealed class AuthenticationService : IAuthenticationService
             Status = AuthenticationStatus.Success
         };
     }
+
     public async Task<AccountSessionResponse?> GetSessionInfo(string sessionToken, CancellationToken cancellationToken)
     {
         var timeNow = DateTime.UtcNow;
@@ -73,22 +75,28 @@ public sealed class AuthenticationService : IAuthenticationService
         var dbContext = scoped.ServiceProvider.GetRequiredService<CardsStorageServiceDbContext>();
         var session = await dbContext.AccountsSessions.FirstOrDefaultAsync(s => s.SessionToken == sessionToken, cancellationToken);
 
-        return session is null 
+        return session is null
             ? null 
             : new()
             {
+                AccountId = session.AccountId,
                 SessionId = session.Id,
                 SessionToken = sessionToken,
                 SessionEnd = session.End
             };
     }
+
     private async Task<Account?> GetAccountByLogin(string login, CancellationToken cancellationToken)
     {
         using var scoped = _serviceScopedFactory.CreateScope();
         var dbContext = scoped.ServiceProvider.GetRequiredService<CardsStorageServiceDbContext>();
 
-        return await dbContext.Accounts.FirstOrDefaultAsync(a => a.Email == login, cancellationToken);
+        return await dbContext.Accounts.FirstOrDefaultAsync(
+                                                a => a.Email == login &&
+                                                a.IsDeleted == false
+                                                , cancellationToken);
     }
+
     private string GenerateJwtToken(Guid accountId, TimeSpan validity)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -104,6 +112,7 @@ public sealed class AuthenticationService : IAuthenticationService
         SecurityToken token = jwtSecurityTokenHandler.CreateToken(securityTokenDescriptor);
         return jwtSecurityTokenHandler.WriteToken(token);
     }
+
     private async Task<AccountSessionResponse> AddSession(
         Account account, 
         TimeSpan sessionValidity, 
@@ -131,8 +140,10 @@ public sealed class AuthenticationService : IAuthenticationService
             SessionId = newSession.Entity.Id,
             SessionToken = newSession.Entity.SessionToken,
             SessionEnd = newSession.Entity.End,
+            AccountId = newSession.Entity.AccountId
         };
     }
+
     private void CashSession(AccountSessionResponse session)
     {
         _accountsSessionsCash.TryAdd(session.SessionToken, session);

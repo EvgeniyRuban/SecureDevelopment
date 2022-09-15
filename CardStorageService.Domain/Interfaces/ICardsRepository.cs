@@ -5,19 +5,19 @@ public interface ICardsRepository
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<Guid> Add(CardToCreate cardToCreate, CancellationToken cancellationToken);
+    Task<Guid> Add(Card cardToCreate, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<CardResponse> Get(Guid id, CancellationToken cancellationToken);
+    Task<Card> Get(Guid id, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<IEnumerable<CardResponse>> GetAll(CancellationToken cancellationToken);
+    Task<IEnumerable<Card>> GetAll(CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task Update(CardToUpdate cardToUpdate, CancellationToken cancellationToken);
+    Task Update(Card cardToUpdate, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>

@@ -18,21 +18,14 @@ public sealed class CardsRepository : ICardsRepository
         _logger = logger;
     }
 
-    public async Task<Guid> Add(CardToCreate cardToCreate, CancellationToken cancellationToken)
+    public async Task<Guid> Add(Card cardToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToCreate, nameof(cardToCreate));
         cancellationToken.ThrowIfCancellationRequested();
 
-        var card = new Card()
-        {
-            ClientId = cardToCreate.ClientId,
-            Number = cardToCreate.Number,
-            CVV2 = cardToCreate.CVV2,
-            ExpirationDate = cardToCreate.ExpirationDate,
-        };
+        var newClient = await _context.Cards.AddAsync(cardToCreate, cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
-        var newClient = await _context.Cards.AddAsync(card, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return newClient.Entity.Id;
@@ -43,69 +36,56 @@ public sealed class CardsRepository : ICardsRepository
         cancellationToken.ThrowIfCancellationRequested();
 
         var cardToDelete = await _context.Cards.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
         ArgumentNullException.ThrowIfNull(cardToDelete, nameof(cardToDelete));
         cancellationToken.ThrowIfCancellationRequested();
 
         _context.Cards.Remove(cardToDelete);
 
+        cancellationToken.ThrowIfCancellationRequested();
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<CardResponse> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<Card> Get(Guid id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+
         var card = await _context.Cards.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
         ArgumentNullException.ThrowIfNull(card, nameof(card));
 
-        return new CardResponse
-        {
-            Id = card.Id,
-            ClientId = card.ClientId,
-            Number = card.Number,
-            CVV2 = card.CVV2,
-            ExpirationDate = card.ExpirationDate,
-        };
+        return card;
     }
 
-    public async Task<IEnumerable<CardResponse>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Card>> GetAll(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+
         var cards = await _context.Cards.ToListAsync(cancellationToken);
+
         ArgumentNullException.ThrowIfNull(cards, nameof(cards));
-
         cancellationToken.ThrowIfCancellationRequested();
-        List<CardResponse> cardsResponse = new();
-        cards.ForEach(c =>
-        {
-            cardsResponse.Add(new()
-            {
-                Id = c.Id,
-                ClientId = c.ClientId,
-                Number = c.Number,
-                CVV2 = c.CVV2,
-                ExpirationDate = c.ExpirationDate,
-            });
-        });
 
-        return cardsResponse;
+        return cards;
     }
 
-    public async Task Update(CardToUpdate cardToUpdate, CancellationToken cancellationToken)
+    public async Task Update(Card cardToUpdate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToUpdate, nameof(cardToUpdate));
         cancellationToken.ThrowIfCancellationRequested();
 
         var card = await _context.Cards.FirstOrDefaultAsync(c => c.Id == cardToUpdate.Id, cancellationToken);
+
         ArgumentNullException.ThrowIfNull(card, nameof(card));
-
         cancellationToken.ThrowIfCancellationRequested();
-        card.Id = cardToUpdate.Id;
+
         card.ClientId = cardToUpdate.ClientId;
-        card.Number = cardToUpdate.Number;
-        card.CVV2 = cardToUpdate.CVV2;
-        card.ExpirationDate = cardToUpdate.ExpirationDate ?? card.ExpirationDate;
+        card.Number = !string.IsNullOrWhiteSpace(cardToUpdate.Number) ? cardToUpdate.Number : card.Number;
+        card.CVV2 = !string.IsNullOrWhiteSpace(cardToUpdate.CVV2) ? cardToUpdate.CVV2 : card.CVV2;
+        card.ExpirationDate = cardToUpdate.ExpirationDate;
 
         cancellationToken.ThrowIfCancellationRequested();
+
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

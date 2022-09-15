@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CardStorageService.DAL;
+namespace CardStorageService.Domain;
 
 [Table("Accounts")]
 public class Account

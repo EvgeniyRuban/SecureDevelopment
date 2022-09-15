@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using CardStorageService.Domain;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CardStorageService.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class AccountsController : ControllerBase
@@ -67,7 +69,9 @@ public class AccountsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Add([FromBody] AccountToCreate accountToCreate, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Add(
+        [FromBody] AccountToCreate accountToCreate, 
+        CancellationToken cancellationToken)
     {
         Guid? newAccountId = null;
 
@@ -88,7 +92,9 @@ public class AccountsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody] AccountToUpdate accountToUpdate, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update(
+        [FromBody] AccountToUpdate accountToUpdate, 
+        CancellationToken cancellationToken)
     {
         try
         {

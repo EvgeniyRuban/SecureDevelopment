@@ -23,15 +23,51 @@ public sealed class AccountsSessionsService : IAccountsSessionsService
     {
         ArgumentNullException.ThrowIfNull(accountSessionToCreate, nameof(accountSessionToCreate));
 
-        return await _accountsSessionsRepository.Add(accountSessionToCreate, cancellationToken);
+        return await _accountsSessionsRepository.Add(new()
+        {
+            AccountId = accountSessionToCreate.AccountId,
+            SessionToken = accountSessionToCreate.SessionToken,
+            Begin = accountSessionToCreate.Begin,
+            LastRequest = accountSessionToCreate.LastRequest,
+            End = accountSessionToCreate.End,
+        }, cancellationToken);
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken) 
         => await _accountsSessionsRepository.Delete(id, cancellationToken);
 
-    public async Task<AccountSessionResponse> Get(Guid id, CancellationToken cancellationToken) 
-        => await _accountsSessionsRepository.Get(id, cancellationToken);
+    public async Task<AccountSessionResponse> Get(Guid id, CancellationToken cancellationToken)
+    {
+        var accountSession = await _accountsSessionsRepository.Get(id, cancellationToken); 
 
-    public Task<IEnumerable<AccountSessionResponse>> GetAll(CancellationToken cancellationToken) 
-        => _accountsSessionsRepository.GetAll(cancellationToken);
+        ArgumentNullException.ThrowIfNull(accountSession, nameof(accountSession));
+
+        return new()
+        {
+            SessionId = accountSession.Id,
+            SessionToken = accountSession.SessionToken,
+            SessionEnd = accountSession.End
+        };
+    }
+
+    public async Task<IEnumerable<AccountSessionResponse>> GetAll(CancellationToken cancellationToken)
+    {
+        var accountsSessions = await _accountsSessionsRepository.GetAll(cancellationToken);
+
+        ArgumentNullException.ThrowIfNull(accountsSessions, nameof(accountsSessions));
+
+        var accountsSessionsResponse = new List<AccountSessionResponse>();
+
+        foreach (var accountSession in accountsSessions)
+        {
+            accountsSessionsResponse.Add(new()
+            {
+                SessionId= accountSession.Id,
+                SessionToken= accountSession.SessionToken,
+                SessionEnd= accountSession.End
+            });
+        }
+
+        return accountsSessionsResponse;
+    }
 }
