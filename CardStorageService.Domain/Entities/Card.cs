@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CardStorageService.DAL;
+namespace CardStorageService.Domain;
 
 [Table("Cards")]
 public class Card
@@ -17,7 +17,7 @@ public class Card
     public string? Number { get; set; }
 
     [Column]
-    [StringLength(3)]
+    [MaxLength(3), MinLength(3)]
     public string? CVV2 { get; set; }
 
     [Column(TypeName = "datetime2")]

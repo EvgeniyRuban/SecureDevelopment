@@ -18,20 +18,12 @@ public class AccountsRepository : IAccountsRepository
         _logger = logger;
     }
 
-    public async Task<Guid> Add(AccountToCreate accountToCreate, CancellationToken cancellationToken)
+    public async Task<Guid> Add(Account accountToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(accountToCreate, nameof(accountToCreate));
         cancellationToken.ThrowIfCancellationRequested();
 
-        var newAccount = await _dbContext.Accounts.AddAsync(new()
-        {
-            Email = accountToCreate.Email,
-            PasswordHash = accountToCreate.PasswordHash,
-            PasswordSalt = accountToCreate.PasswordSalt,
-            Firstname = accountToCreate.Firstname,
-            Surname = accountToCreate.Surname,
-            Patronymic = accountToCreate.Patronymic,
-        }, cancellationToken);
+        var newAccount = await _dbContext.Accounts.AddAsync(accountToCreate, cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -53,7 +45,7 @@ public class AccountsRepository : IAccountsRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<AccountResponse> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<Account> Get(Guid id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var account = await _dbContext.Accounts.FirstOrDefaultAsync(a =>
@@ -64,17 +56,10 @@ public class AccountsRepository : IAccountsRepository
         ArgumentNullException.ThrowIfNull(account, nameof(account));
         cancellationToken.ThrowIfCancellationRequested();
 
-        return new()
-        {
-            Id = account.Id,
-            Email = account.Email,
-            Firstname = account.Firstname,
-            Surname = account.Surname,
-            Patronymic = account.Patronymic,
-        };
+        return account;
     }
 
-    public async Task<IEnumerable<AccountResponse>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Account>> GetAll(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -84,24 +69,10 @@ public class AccountsRepository : IAccountsRepository
         ArgumentNullException.ThrowIfNull(accounts, nameof(accounts));
         cancellationToken.ThrowIfCancellationRequested();
 
-        var accountsResponse = new List<AccountResponse>(accounts.Count);
-
-        foreach(var account in accounts)
-        {
-            accountsResponse.Add(new()
-            {
-                Id = account.Id,
-                Email= account.Email,
-                Firstname= account.Firstname,
-                Surname= account.Surname,
-                Patronymic= account.Patronymic,
-            });
-        }
-
-        return accountsResponse;
+        return accounts;
     }
 
-    public async Task<AccountAuthenticationResponse> GetAuthenticationyInfoByLogin(
+    public async Task<Account> Get(
         string login,
         CancellationToken cancellationToken)
     {
@@ -119,19 +90,10 @@ public class AccountsRepository : IAccountsRepository
         ArgumentNullException.ThrowIfNull(account, nameof(account));
         cancellationToken.ThrowIfCancellationRequested();
 
-        return new()
-        {
-            Id = account.Id,
-            Email = account.Email,
-            PasswordHash = account.PasswordHash,
-            PasswordSalt = account.PasswordSalt,
-            Firstname = account.Firstname,
-            Surname = account.Surname,
-            Patronymic = account.Patronymic,
-        };
+        return account;
     }
 
-    public async Task Update(AccountToUpdate accountToUpdate, CancellationToken cancellationToken)
+    public async Task Update(Account accountToUpdate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(accountToUpdate, nameof(accountToUpdate));
         cancellationToken.ThrowIfCancellationRequested();

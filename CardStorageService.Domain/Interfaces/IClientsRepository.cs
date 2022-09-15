@@ -5,19 +5,19 @@ public interface IClientsRepository
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<Guid> Add(ClientToCreate clientToCreate, CancellationToken cancellationToken);
+    Task<Guid> Add(Client clientToCreate, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<ClientResponse> Get(Guid id, CancellationToken cancellationToken);
+    Task<Client> Get(Guid id, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task<IEnumerable<ClientResponse>> GetAll(CancellationToken cancellationToken);
+    Task<IEnumerable<Client>> GetAll(CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    Task Update(ClientToUpdate clientToUpdate, CancellationToken cancellationToken);
+    Task Update(Client clientToUpdate, CancellationToken cancellationToken);
     /// <summary></summary>
     /// <exception cref="OperationCanceledException"></exception>
     /// <exception cref="ArgumentNullException"></exception>

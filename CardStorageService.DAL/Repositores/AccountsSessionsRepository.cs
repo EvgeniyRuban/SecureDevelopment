@@ -20,19 +20,12 @@ public sealed class AccountsSessionsRepository : IAccountsSessionsRepository
         _logger = logger;
     }
 
-    public async Task<Guid> Add(AccountSessionToCreate accountSessionToCreate, CancellationToken cancellationToken)
+    public async Task<Guid> Add(AccountSession accountSessionToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(accountSessionToCreate, nameof(accountSessionToCreate));
         cancellationToken.ThrowIfCancellationRequested();
 
-        var accountSession = await _dbContext.AccountsSessions.AddAsync(new()
-        {
-            AccountId = accountSessionToCreate.AccountId,
-            SessionToken = accountSessionToCreate.SessionToken,
-            Begin = accountSessionToCreate.Begin,
-            LastRequest = accountSessionToCreate.LastRequest,
-            End = accountSessionToCreate.End,
-        }, cancellationToken);
+        var accountSession = await _dbContext.AccountsSessions.AddAsync(accountSessionToCreate, cancellationToken);
 
         ArgumentNullException.ThrowIfNull(accountSession, nameof(accountSession));
         cancellationToken.ThrowIfCancellationRequested();
@@ -57,7 +50,7 @@ public sealed class AccountsSessionsRepository : IAccountsSessionsRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<AccountSessionResponse> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountSession> Get(Guid id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -66,18 +59,12 @@ public sealed class AccountsSessionsRepository : IAccountsSessionsRepository
                                                         cancellationToken);
 
         ArgumentNullException.ThrowIfNull(accountSession, nameof(accountSession));
-
         cancellationToken.ThrowIfCancellationRequested();
 
-        return new()
-        {
-            SessionId = accountSession.Id,
-            SessionToken = accountSession.SessionToken,
-            SessionEnd = accountSession.End
-        };
+        return accountSession;
     }
 
-    public async Task<AccountSessionResponse> Get(string sessionToken, CancellationToken cancellationToken)
+    public async Task<AccountSession> Get(string sessionToken, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -86,18 +73,12 @@ public sealed class AccountsSessionsRepository : IAccountsSessionsRepository
                                                         cancellationToken);
 
         ArgumentNullException.ThrowIfNull(accountSession, nameof(accountSession));
-
         cancellationToken.ThrowIfCancellationRequested();
 
-        return new()
-        {
-            SessionId = accountSession.Id,
-            SessionToken = accountSession.SessionToken,
-            SessionEnd = accountSession.End
-        };
+        return accountSession;
     }
 
-    public async Task<IEnumerable<AccountSessionResponse>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<AccountSession>> GetAll(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -106,17 +87,6 @@ public sealed class AccountsSessionsRepository : IAccountsSessionsRepository
         ArgumentNullException.ThrowIfNull(accountsSessions, nameof(accountsSessions));
         cancellationToken.ThrowIfCancellationRequested();
 
-        var accountsSessionsResponse = new List<AccountSessionResponse>(accountsSessions.Count);
-
-        foreach(var session in accountsSessions)
-        {
-            accountsSessionsResponse.Add(new()
-            {
-                SessionId = session.Id,
-                SessionToken= session.SessionToken,
-                SessionEnd= session.End
-            });
-        }
-        return accountsSessionsResponse;
+        return accountsSessions;
     }
 }
