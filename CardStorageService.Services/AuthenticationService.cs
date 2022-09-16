@@ -12,7 +12,7 @@ namespace CardStorageService.Services;
 
 public sealed class AuthenticationService : IAuthenticationService
 {
-    public const string _sercretCode = "265381f4-4b09-44fd-beca-08da94f8637a";
+    public const string SercretCode = "265381f4-4b09-44fd-beca-08da94f8637a";
 
     private readonly IServiceScopeFactory _serviceScopedFactory;
     private readonly object _lock = new();
@@ -100,7 +100,7 @@ public sealed class AuthenticationService : IAuthenticationService
     private string GenerateJwtToken(Guid accountId, TimeSpan validity)
     {
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-        byte[] key = Encoding.ASCII.GetBytes(_sercretCode);
+        byte[] key = Encoding.ASCII.GetBytes(SercretCode);
 
         SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
         {
