@@ -28,7 +28,7 @@ namespace CardStorageService
         {
             services.AddDbContext<CardsStorageServiceDbContext>(options =>
             {
-                options.UseSqlServer(Configuration["Settings:DbSettings:ConnectionString"]);
+                options.UseSqlServer(CacheProvider.GetConnectionFromCache().ToString());
             });
 
             services.AddScoped<IClientsRepository, ClientsRepository>();
@@ -55,7 +55,7 @@ namespace CardStorageService
                 x.TokenValidationParameters = new()
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(AuthenticationService._sercretCode)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(AuthenticationService.SercretCode)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
