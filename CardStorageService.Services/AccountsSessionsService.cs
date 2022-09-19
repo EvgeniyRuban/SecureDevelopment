@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using AutoMapper;
 using CardStorageService.Domain;
 
 namespace CardStorageService.Services;
@@ -7,30 +8,29 @@ public sealed class AccountsSessionsService : IAccountsSessionsService
 {
     private readonly IAccountsSessionsRepository _accountsSessionsRepository;
     private readonly ILogger<AccountsSessionsService> _logger;
+    private readonly IMapper _mapper;
 
     public AccountsSessionsService(
         IAccountsSessionsRepository accountsSessionRepository, 
-        ILogger<AccountsSessionsService> logger)
+        ILogger<AccountsSessionsService> logger,
+        IMapper mapper)
     {
         ArgumentNullException.ThrowIfNull(accountsSessionRepository, nameof(accountsSessionRepository));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+        ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
 
         _accountsSessionsRepository = accountsSessionRepository;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Guid> Add(AccountSessionToCreate accountSessionToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(accountSessionToCreate, nameof(accountSessionToCreate));
 
-        return await _accountsSessionsRepository.Add(new()
-        {
-            AccountId = accountSessionToCreate.AccountId,
-            SessionToken = accountSessionToCreate.SessionToken,
-            Begin = accountSessionToCreate.Begin,
-            LastRequest = accountSessionToCreate.LastRequest,
-            End = accountSessionToCreate.End,
-        }, cancellationToken);
+        return await _accountsSessionsRepository.Add(
+                                                    _mapper.Map<AccountSession>(accountSessionToCreate), 
+                                                    cancellationToken);
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken) 
@@ -42,12 +42,7 @@ public sealed class AccountsSessionsService : IAccountsSessionsService
 
         ArgumentNullException.ThrowIfNull(accountSession, nameof(accountSession));
 
-        return new()
-        {
-            SessionId = accountSession.Id,
-            SessionToken = accountSession.SessionToken,
-            SessionEnd = accountSession.End
-        };
+        return _mapper.Map<AccountSessionResponse>(accountSession);
     }
 
     public async Task<IEnumerable<AccountSessionResponse>> GetAll(CancellationToken cancellationToken)
@@ -56,18 +51,6 @@ public sealed class AccountsSessionsService : IAccountsSessionsService
 
         ArgumentNullException.ThrowIfNull(accountsSessions, nameof(accountsSessions));
 
-        var accountsSessionsResponse = new List<AccountSessionResponse>();
-
-        foreach (var accountSession in accountsSessions)
-        {
-            accountsSessionsResponse.Add(new()
-            {
-                SessionId= accountSession.Id,
-                SessionToken= accountSession.SessionToken,
-                SessionEnd= accountSession.End
-            });
-        }
-
-        return accountsSessionsResponse;
+        return _mapper.Map<List<AccountSessionResponse>>(accountsSessions);
     }
 }

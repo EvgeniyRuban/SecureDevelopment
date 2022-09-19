@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using AutoMapper;
 using CardStorageService.Domain;
 
 namespace CardStorageService.Services;
@@ -7,27 +8,27 @@ public sealed class CardsService : ICardsService
 {
     private readonly ICardsRepository _cardsRepository;
     private readonly ILogger<CardsService> _logger;
+    private readonly IMapper _mapper;
 
-    public CardsService(ICardsRepository cardsRepository, ILogger<CardsService> logger)
+    public CardsService(
+        ICardsRepository cardsRepository, 
+        ILogger<CardsService> logger,
+        IMapper mapper)
     {
         ArgumentNullException.ThrowIfNull(cardsRepository, nameof(cardsRepository));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+        ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
 
         _cardsRepository = cardsRepository;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Guid> Add(CardToCreate cardToCreate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToCreate, nameof(cardToCreate));
 
-        return await _cardsRepository.Add(new()
-        {
-            ClientId = cardToCreate.ClientId,
-            Number = cardToCreate.Number,
-            CVV2 = cardToCreate.CVV2,
-            ExpirationDate = cardToCreate.ExpirationDate,
-        }, cancellationToken);
+        return await _cardsRepository.Add(_mapper.Map<Card>(cardToCreate), cancellationToken);
     }
 
     public async Task Delete(Guid id, CancellationToken cancellationToken) 
@@ -39,14 +40,7 @@ public sealed class CardsService : ICardsService
 
         ArgumentNullException.ThrowIfNull(card, nameof(card));
 
-        return new()
-        {
-            Id = card.Id,
-            ClientId = card.ClientId,
-            Number= card.Number,
-            CVV2 = card.CVV2,
-            ExpirationDate= card.ExpirationDate,
-        };
+        return _mapper.Map<CardResponse>(card);
     }
 
     public async Task<IEnumerable<CardResponse>> GetAll(CancellationToken cancellationToken)
@@ -55,34 +49,13 @@ public sealed class CardsService : ICardsService
 
         ArgumentNullException.ThrowIfNull(cards, nameof(cards));
 
-        var cardsResponse = new List<CardResponse>();
-
-        foreach (var card in cards)
-        {
-            cardsResponse.Add(new()
-            {
-                Id= card.Id,
-                ClientId= card.ClientId,
-                Number = card.Number,
-                CVV2= card.CVV2,
-                ExpirationDate = card.ExpirationDate,
-            });
-        }
-
-        return cardsResponse;
+        return _mapper.Map<List<CardResponse>>(cards);
     }
 
     public async Task Update(CardToUpdate cardToUpdate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(cardToUpdate, nameof(cardToUpdate));
 
-        await _cardsRepository.Update(new()
-        {
-            Id = cardToUpdate.Id,
-            ClientId = cardToUpdate.ClientId,
-            Number = cardToUpdate.Number,
-            CVV2= cardToUpdate.CVV2,
-            ExpirationDate = (DateTime)cardToUpdate.ExpirationDate
-        }, cancellationToken);
+        await _cardsRepository.Update(_mapper.Map<Card>(cardToUpdate), cancellationToken);
     }
 }

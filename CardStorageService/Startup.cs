@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using CardStorageService.DAL;
 using CardStorageService.Domain;
 using CardStorageService.Services;
+using AutoMapper;
 
 namespace CardStorageService
 {
@@ -26,6 +27,9 @@ namespace CardStorageService
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var mapperConfigurations = new MapperConfiguration(mp => mp.AddProfile<MappingProfile>()); 
+            var mapper = mapperConfigurations.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddDbContext<CardsStorageServiceDbContext>(options =>
             {

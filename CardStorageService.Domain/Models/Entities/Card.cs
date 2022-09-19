@@ -12,11 +12,9 @@ public class Card
     [ForeignKey(nameof(Client))]
     public Guid ClientId { get; set; }
 
-    [Column]
     [StringLength(16)]
     public string? Number { get; set; }
 
-    [Column]
     [MaxLength(3), MinLength(3)]
     public string? CVV2 { get; set; }
 
