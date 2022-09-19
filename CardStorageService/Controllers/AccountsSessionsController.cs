@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using CardStorageService.Domain;
 using Microsoft.AspNetCore.Authorization;
+using CardStorageService.Domain;
 
 namespace CardStorageService.Controllers;
 
@@ -21,6 +21,9 @@ public class AccountsSessionsController : ControllerBase
         IAccountsSessionsService accountsSessionsService,
         ILogger<AccountsSessionsController> logger)
     {
+        ArgumentNullException.ThrowIfNull(accountsSessionsService, nameof(accountsSessionsService));
+        ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+
         _accountsSessionsService = accountsSessionsService;
         _logger = logger;
     }
@@ -65,27 +68,6 @@ public class AccountsSessionsController : ControllerBase
         }
 
         return Ok(accountsSessions);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Guid>> Add([FromBody] AccountSessionToCreate accountToCreate, CancellationToken cancellationToken)
-    {
-        Guid? newAccountSessionId = null;
-
-        try
-        {
-            newAccountSessionId = await _accountsSessionsService.Add(accountToCreate, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogInformation("Operation was cancelled.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-        }
-
-        return Ok(newAccountSessionId);
     }
 
     [HttpDelete("{id}")]

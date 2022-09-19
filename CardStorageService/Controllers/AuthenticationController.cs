@@ -1,12 +1,13 @@
-﻿using CardStorageService.Domain;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Net.Http.Headers;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
+using FluentValidation;
+using CardStorageService.Domain;
 
 namespace CardStorageService.Controllers;
 
@@ -17,16 +18,20 @@ public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ILogger<AuthenticationController> _logger;
+    private readonly IValidator<AuthenticationRequest> _authenticationRequestValidator;
 
     public AuthenticationController(
         IAuthenticationService authenticationService, 
-        ILogger<AuthenticationController> logger)
+        ILogger<AuthenticationController> logger,
+        IValidator<AuthenticationRequest> validator)
     {
         ArgumentNullException.ThrowIfNull(authenticationService, nameof(authenticationService));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+        ArgumentNullException.ThrowIfNull(validator, nameof(validator));
 
         _authenticationService = authenticationService;
         _logger = logger;
+        _authenticationRequestValidator = validator;
     }
 
     [AllowAnonymous]
@@ -35,6 +40,12 @@ public class AuthenticationController : ControllerBase
         [FromBody] AuthenticationRequest request, 
         CancellationToken cancellationToken)
     {
+        var validationResult = await _authenticationRequestValidator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.ToDictionary());
+        }
+
         AuthenticationResponse response = null;
 
         try

@@ -4,6 +4,5 @@ public enum AuthenticationStatus
 {
     Success,
     AccountLocked,
-    UserNotFound,
-    InvalidPassword
+    InvalidLoginOrPassword
 }

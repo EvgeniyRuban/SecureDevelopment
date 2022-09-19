@@ -4,8 +4,9 @@ using System.Threading;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using CardStorageService.Domain;
 using Microsoft.AspNetCore.Authorization;
+using FluentValidation;
+using CardStorageService.Domain;
 
 namespace CardStorageService.Controllers;
 
@@ -16,14 +17,20 @@ public sealed class CardsController : ControllerBase
 {
     private readonly ICardsService _cardsService;
     private readonly ILogger<CardsController> _logger;
+    private readonly IValidator<CardToCreate> _cardToCreateValidator;
 
-    public CardsController(ICardsService cardsService, ILogger<CardsController> logger)
+    public CardsController(
+        ICardsService cardsService, 
+        ILogger<CardsController> logger,
+        IValidator<CardToCreate> validator)
     {
         ArgumentNullException.ThrowIfNull(cardsService, nameof(cardsService));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+        ArgumentNullException.ThrowIfNull(validator, nameof(validator));
 
         _cardsService = cardsService;
         _logger = logger;
+        _cardToCreateValidator = validator;
     }
 
     [HttpGet("{id}")]
@@ -71,7 +78,11 @@ public sealed class CardsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Guid>> Add([FromBody] CardToCreate cardToCreate, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(cardToCreate, nameof(cardToCreate));
+        var validationResult = await _cardToCreateValidator.ValidateAsync(cardToCreate, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.ToDictionary());
+        }
 
         Guid? newCardId = null;
         try

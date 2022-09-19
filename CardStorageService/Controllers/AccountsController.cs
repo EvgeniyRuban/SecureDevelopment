@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using CardStorageService.Domain;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using FluentValidation;
+using CardStorageService.Domain;
 
 namespace CardStorageService.Controllers;
 
@@ -16,14 +17,20 @@ public class AccountsController : ControllerBase
 {
     private readonly IAccountsService _accountsService;
     private readonly ILogger<AccountsController> _logger;
+    private readonly IValidator<AccountToCreate> _accountToCreateValidator;
 
-    public AccountsController(IAccountsService accountsService, ILogger<AccountsController> logger)
+    public AccountsController(
+        IAccountsService accountsService, 
+        ILogger<AccountsController> logger,
+        IValidator<AccountToCreate> validator)
     {
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
         ArgumentNullException.ThrowIfNull(accountsService, nameof(accountsService));
+        ArgumentNullException.ThrowIfNull(validator, nameof(validator));
 
         _accountsService = accountsService;
         _logger = logger;
+        _accountToCreateValidator = validator;
     }
 
     [HttpGet("{id}")]
@@ -73,6 +80,12 @@ public class AccountsController : ControllerBase
         [FromBody] AccountToCreate accountToCreate, 
         CancellationToken cancellationToken)
     {
+        var validationResult = await _accountToCreateValidator.ValidateAsync(accountToCreate, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.ToDictionary());
+        }
+
         Guid? newAccountId = null;
 
         try
