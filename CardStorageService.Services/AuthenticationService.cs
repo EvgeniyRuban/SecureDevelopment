@@ -38,7 +38,7 @@ public sealed class AuthenticationService : IAuthenticationService
         {
             return new AuthenticationResponse
             {
-                Status = AuthenticationStatus.UserNotFound,
+                Status = AuthenticationStatus.InvalidLoginOrPassword,
             };
         }
 
@@ -54,7 +54,7 @@ public sealed class AuthenticationService : IAuthenticationService
         {
             return new()
             {
-                Status = AuthenticationStatus.InvalidPassword
+                Status = AuthenticationStatus.InvalidLoginOrPassword
             };
         }
 

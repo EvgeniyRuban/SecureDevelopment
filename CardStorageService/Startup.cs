@@ -9,10 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
+using FluentValidation;
 using CardStorageService.DAL;
 using CardStorageService.Domain;
 using CardStorageService.Services;
-using AutoMapper;
 
 namespace CardStorageService
 {
@@ -31,18 +32,23 @@ namespace CardStorageService
             var mapper = mapperConfigurations.CreateMapper();
             services.AddSingleton(mapper);
 
+            services.AddScoped<IValidator<AccountToCreate>, AccountToCreateValidator>();
+            services.AddScoped<IValidator<CardToCreate>, CardToCreateValidator>();
+            services.AddScoped<IValidator<ClientToCreate>, ClientToCreateValidator>();
+            services.AddScoped<IValidator<AuthenticationRequest>, AuthenticationRequestValidator>();
+
             services.AddDbContext<CardsStorageServiceDbContext>(options =>
             {
                 options.UseSqlServer(CacheProvider.GetConnectionFromCache().ToString());
             });
 
             services.AddScoped<IClientsRepository, ClientsRepository>();
-            services.AddScoped<ICardsRepository, CardsRepository>();
-            services.AddScoped<IAccountsRepository, AccountsRepository>();
-            services.AddScoped<IAccountsSessionsRepository, AccountsSessionsRepository>();
             services.AddScoped<IClientsService, ClientsService>();
+            services.AddScoped<ICardsRepository, CardsRepository>();
             services.AddScoped<ICardsService, CardsService>();
+            services.AddScoped<IAccountsRepository, AccountsRepository>();
             services.AddScoped<IAccountsService, AccountsService>();
+            services.AddScoped<IAccountsSessionsRepository, AccountsSessionsRepository>();
             services.AddScoped<IAccountsSessionsService, AccountsSessionsService>();
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
