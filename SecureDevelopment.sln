@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardStorageService.Domain",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardStorageService.Services", "CardStorageService.Services\CardStorageService.Services.csproj", "{BEE4987D-5B6E-42C1-84DE-DEFD044A316D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCertification", "AppCertification\AppCertification.csproj", "{548222E7-5B93-4DD3-A74F-42C50A4BD77A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppCertification", "AppCertification\AppCertification.csproj", "{548222E7-5B93-4DD3-A74F-42C50A4BD77A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FullSearchSamples", "FullSearchSamples\FullSearchSamples\FullSearchSamples.csproj", "{B3EC0643-DD03-4701-B665-103CFF04304A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{548222E7-5B93-4DD3-A74F-42C50A4BD77A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{548222E7-5B93-4DD3-A74F-42C50A4BD77A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{548222E7-5B93-4DD3-A74F-42C50A4BD77A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3EC0643-DD03-4701-B665-103CFF04304A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3EC0643-DD03-4701-B665-103CFF04304A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3EC0643-DD03-4701-B665-103CFF04304A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3EC0643-DD03-4701-B665-103CFF04304A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
