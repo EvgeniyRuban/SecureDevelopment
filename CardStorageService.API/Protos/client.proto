@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "ClientServiceProtos";
+
+package ClientServiceProtos;
+
+service ClientService {
+
+	rpc Add (CreateClientRequest) returns (CreateClientResponse);
+}
+
+message CreateClientRequest{
+    string Surname = 1;
+    string FirstName = 2;
+    string Patronymic = 3;
+}
+
+message CreateClientResponse{
+    string ClientId =  1;
+    int32 ErrorCode = 2;
+    string ErrorMessage = 3;
+}

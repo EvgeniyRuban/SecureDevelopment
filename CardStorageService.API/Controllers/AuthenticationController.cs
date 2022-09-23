@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using CardStorageService.Domain;
 
-namespace CardStorageService.Controllers;
+namespace CardStorageService.API;
 
 [Authorize]
 [ApiController]

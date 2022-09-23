@@ -1,46 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using CardStorageService.Domain;
 
-namespace CardStorageService.Controllers;
+namespace CardStorageService.API;
 
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class AccountsController : ControllerBase
+public sealed class CardsController : ControllerBase
 {
-    private readonly IAccountsService _accountsService;
-    private readonly ILogger<AccountsController> _logger;
-    private readonly IValidator<AccountToCreate> _accountToCreateValidator;
+    private readonly ICardsService _cardsService;
+    private readonly ILogger<CardsController> _logger;
+    private readonly IValidator<CardToCreate> _cardToCreateValidator;
 
-    public AccountsController(
-        IAccountsService accountsService, 
-        ILogger<AccountsController> logger,
-        IValidator<AccountToCreate> validator)
+    public CardsController(
+        ICardsService cardsService, 
+        ILogger<CardsController> logger,
+        IValidator<CardToCreate> validator)
     {
+        ArgumentNullException.ThrowIfNull(cardsService, nameof(cardsService));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
-        ArgumentNullException.ThrowIfNull(accountsService, nameof(accountsService));
         ArgumentNullException.ThrowIfNull(validator, nameof(validator));
 
-        _accountsService = accountsService;
+        _cardsService = cardsService;
         _logger = logger;
-        _accountToCreateValidator = validator;
+        _cardToCreateValidator = validator;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<AccountResponse>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CardResponse>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        AccountResponse account = null;
+        CardResponse card = null;
 
         try
         {
-            account = await _accountsService.Get(id, cancellationToken);
+            card = await _cardsService.Get(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -51,17 +51,17 @@ public class AccountsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(account);
+        return Ok(card);
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<CardResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        IEnumerable<AccountResponse> accounts = null;
+        IEnumerable<CardResponse> cards = null;
 
         try
         {
-            accounts = await _accountsService.GetAll(cancellationToken);
+            cards = await _cardsService.GetAll(cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -72,46 +72,43 @@ public class AccountsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(accounts);
+        return Ok(cards);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Add(
-        [FromBody] AccountToCreate accountToCreate, 
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Add([FromBody] CardToCreate cardToCreate, CancellationToken cancellationToken)
     {
-        var validationResult = await _accountToCreateValidator.ValidateAsync(accountToCreate, cancellationToken);
+        var validationResult = await _cardToCreateValidator.ValidateAsync(cardToCreate, cancellationToken);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.ToDictionary());
         }
 
-        Guid? newAccountId = null;
-
+        Guid? newCardId = null;
         try
         {
-            newAccountId = await _accountsService.Add(accountToCreate, cancellationToken);
+            newCardId = await _cardsService.Add(cardToCreate, cancellationToken);
         }
-        catch (OperationCanceledException)
+        catch(OperationCanceledException)
         {
             _logger.LogInformation("Operation was cancelled.");
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(newAccountId);
+        return Ok(newCardId);
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update(
-        [FromBody] AccountToUpdate accountToUpdate, 
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromBody] CardToUpdate cardToUpdate, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(cardToUpdate, nameof(cardToUpdate));
+
         try
         {
-            await _accountsService.Update(accountToUpdate, cancellationToken);
+            await _cardsService.Update(cardToUpdate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -130,7 +127,7 @@ public class AccountsController : ControllerBase
     {
         try
         {
-            await _accountsService.Delete(id, cancellationToken);
+            await _cardsService.Delete(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
