@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using CardStorageService.Domain;
 
-namespace CardStorageService.Controllers;
+namespace CardStorageService.API;
 
 [Authorize]
 [ApiController]

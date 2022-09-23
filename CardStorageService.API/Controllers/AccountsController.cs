@@ -1,46 +1,46 @@
-﻿using System.Threading.Tasks;
-using System;
-using System.Threading;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using FluentValidation;
 using CardStorageService.Domain;
 
-namespace CardStorageService.Controllers;
+namespace CardStorageService.API;
 
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public class ClientsController : ControllerBase
+public class AccountsController : ControllerBase
 {
-    private readonly IClientsService _clientsService;
-    private readonly ILogger<ClientsController> _logger;
-    private readonly IValidator<ClientToCreate> _clientToCreateValidator;
+    private readonly IAccountsService _accountsService;
+    private readonly ILogger<AccountsController> _logger;
+    private readonly IValidator<AccountToCreate> _accountToCreateValidator;
 
-    public ClientsController(
-        IClientsService clientsService, 
-        ILogger<ClientsController> logger,
-        IValidator<ClientToCreate> validator)
+    public AccountsController(
+        IAccountsService accountsService, 
+        ILogger<AccountsController> logger,
+        IValidator<AccountToCreate> validator)
     {
-        ArgumentNullException.ThrowIfNull(clientsService, nameof(clientsService));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+        ArgumentNullException.ThrowIfNull(accountsService, nameof(accountsService));
         ArgumentNullException.ThrowIfNull(validator, nameof(validator));
 
-        _clientsService = clientsService;
+        _accountsService = accountsService;
         _logger = logger;
-        _clientToCreateValidator = validator;
+        _accountToCreateValidator = validator;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ClientResponse>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<AccountResponse>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        ClientResponse client = null;
+        AccountResponse account = null;
 
         try
         {
-            client = await _clientsService.Get(id, cancellationToken);
+            account = await _accountsService.Get(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -51,17 +51,17 @@ public class ClientsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(client);
+        return Ok(account);
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ClientResponse>>> GetAll(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<AccountResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        IEnumerable<ClientResponse> clients = null;
+        IEnumerable<AccountResponse> accounts = null;
 
         try
         {
-            clients = await _clientsService.GetAll(cancellationToken);
+            accounts = await _accountsService.GetAll(cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -72,22 +72,25 @@ public class ClientsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(clients);
+        return Ok(accounts);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Add([FromBody] ClientToCreate clientToCreate, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Add(
+        [FromBody] AccountToCreate accountToCreate, 
+        CancellationToken cancellationToken)
     {
-        var validationResult = await _clientToCreateValidator.ValidateAsync(clientToCreate, cancellationToken);
+        var validationResult = await _accountToCreateValidator.ValidateAsync(accountToCreate, cancellationToken);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.ToDictionary());
         }
 
-        Guid? newClientId = null;
+        Guid? newAccountId = null;
+
         try
         {
-            newClientId = await _clientsService.Add(clientToCreate, cancellationToken);
+            newAccountId = await _accountsService.Add(accountToCreate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -98,17 +101,17 @@ public class ClientsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(newClientId);
+        return Ok(newAccountId);
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody] ClientToUpdate clientToUpdate, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update(
+        [FromBody] AccountToUpdate accountToUpdate, 
+        CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(clientToUpdate, nameof(clientToUpdate));
-
         try
         {
-            await _clientsService.Update(clientToUpdate, cancellationToken);
+            await _accountsService.Update(accountToUpdate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -127,7 +130,7 @@ public class ClientsController : ControllerBase
     {
         try
         {
-            await _clientsService.Delete(id, cancellationToken);
+            await _accountsService.Delete(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {

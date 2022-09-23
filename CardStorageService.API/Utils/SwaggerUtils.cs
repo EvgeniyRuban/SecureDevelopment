@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace CardStorageService;
+namespace CardStorageService.API;
 
 public static class SwaggerUtils
 {

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using System;
 using System.Threading;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
@@ -8,39 +8,39 @@ using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
 using CardStorageService.Domain;
 
-namespace CardStorageService.Controllers;
+namespace CardStorageService.API;
 
 [Authorize]
 [ApiController]
 [Route("[controller]")]
-public sealed class CardsController : ControllerBase
+public class ClientsController : ControllerBase
 {
-    private readonly ICardsService _cardsService;
-    private readonly ILogger<CardsController> _logger;
-    private readonly IValidator<CardToCreate> _cardToCreateValidator;
+    private readonly IClientsService _clientsService;
+    private readonly ILogger<ClientsController> _logger;
+    private readonly IValidator<ClientToCreate> _clientToCreateValidator;
 
-    public CardsController(
-        ICardsService cardsService, 
-        ILogger<CardsController> logger,
-        IValidator<CardToCreate> validator)
+    public ClientsController(
+        IClientsService clientsService, 
+        ILogger<ClientsController> logger,
+        IValidator<ClientToCreate> validator)
     {
-        ArgumentNullException.ThrowIfNull(cardsService, nameof(cardsService));
+        ArgumentNullException.ThrowIfNull(clientsService, nameof(clientsService));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
         ArgumentNullException.ThrowIfNull(validator, nameof(validator));
 
-        _cardsService = cardsService;
+        _clientsService = clientsService;
         _logger = logger;
-        _cardToCreateValidator = validator;
+        _clientToCreateValidator = validator;
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<CardResponse>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClientResponse>> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        CardResponse card = null;
+        ClientResponse client = null;
 
         try
         {
-            card = await _cardsService.Get(id, cancellationToken);
+            client = await _clientsService.Get(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -51,17 +51,17 @@ public sealed class CardsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(card);
+        return Ok(client);
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CardResponse>>> GetAll(CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<ClientResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        IEnumerable<CardResponse> cards = null;
+        IEnumerable<ClientResponse> clients = null;
 
         try
         {
-            cards = await _cardsService.GetAll(cancellationToken);
+            clients = await _clientsService.GetAll(cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -72,43 +72,43 @@ public sealed class CardsController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(cards);
+        return Ok(clients);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Add([FromBody] CardToCreate cardToCreate, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Add([FromBody] ClientToCreate clientToCreate, CancellationToken cancellationToken)
     {
-        var validationResult = await _cardToCreateValidator.ValidateAsync(cardToCreate, cancellationToken);
+        var validationResult = await _clientToCreateValidator.ValidateAsync(clientToCreate, cancellationToken);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.ToDictionary());
         }
 
-        Guid? newCardId = null;
+        Guid? newClientId = null;
         try
         {
-            newCardId = await _cardsService.Add(cardToCreate, cancellationToken);
+            newClientId = await _clientsService.Add(clientToCreate, cancellationToken);
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             _logger.LogInformation("Operation was cancelled.");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
         }
 
-        return Ok(newCardId);
+        return Ok(newClientId);
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody] CardToUpdate cardToUpdate, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromBody] ClientToUpdate clientToUpdate, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(cardToUpdate, nameof(cardToUpdate));
+        ArgumentNullException.ThrowIfNull(clientToUpdate, nameof(clientToUpdate));
 
         try
         {
-            await _cardsService.Update(cardToUpdate, cancellationToken);
+            await _clientsService.Update(clientToUpdate, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -127,7 +127,7 @@ public sealed class CardsController : ControllerBase
     {
         try
         {
-            await _cardsService.Delete(id, cancellationToken);
+            await _clientsService.Delete(id, cancellationToken);
         }
         catch (OperationCanceledException)
         {
